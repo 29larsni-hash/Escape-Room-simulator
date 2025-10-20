@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <title>Escape Room Game</title>
+</head>
+<body>
+    <a-scene background="color: #000">
+        <!-- Room Structure -->
+        <a-box id="floor" position="0 -0.5 0" width="10" height="0.1" depth="10" color="#8B4513"></a-box>
+        <a-box id="wall-north" position="0 2.5 -5" width="10" height="5" depth="0.1" color="#D2B48C"></a-box>
+        <a-box id="wall-south" position="0 2.5 5" width="10" height="5" depth="0.1" color="#D2B48C"></a-box>
+        <a-box id="wall-east" position="5 2.5 0" width="0.1" height="5" depth="10" color="#D2B48C"></a-box>
+        <a-box id="wall-west" position="-5 2.5 0" width="0.1" height="5" depth="10" color="#D2B48C"></a-box>
+        
+        <!-- Lighting -->
+        <a-light type="ambient" color="#404040"></a-light>
+        <a-light type="point" position="0 4 0" color="#FFF"></a-light>
+        
+        <!-- Puzzle Elements (placeholders) -->
+        <a-box id="puzzle1-keypad" position="-3 1.5 -4.9" width="1" height="1" depth="0.1" color="#333"
+               class="clickable" puzzle="type: keypad"></a-box>
+        
+        <a-sphere id="puzzle2-orb" position="3 1 3" radius="0.3" color="#FF6B6B"
+                  class="clickable collectible" item="name: red-orb"></a-sphere>
+        
+        <a-cylinder id="puzzle3-pedestal" position="0 0.5 -3" radius="0.5" height="1" color="#8B7355"
+                    class="clickable" puzzle="type: pedestal"></a-cylinder>
+        
+        <!-- Door (initially locked) -->
+        <a-box id="exit-door" position="0 1.5 4.9" width="2" height="3" depth="0.2" color="#8B4513"
+               class="clickable" door="locked: true"></a-box>
+        
+        <!-- UI Elements -->
+        <a-text id="status-text" position="-2 4 -3" value="Find 3 clues to escape!" color="#FFF"></a-text>
+        <a-text id="inventory-display" position="2 4 -3" value="Inventory: Empty" color="#FFF"></a-text>
+        
+        <!-- Camera with cursor -->
+        <a-camera position="0 1.6 0">
+            <a-cursor color="#FFF" raycaster="objects: .clickable"></a-cursor>
+        </a-camera>
+    </a-scene>
+
+    <script>
+        // Game State
+        const gameState = {
+            inventory: [],
+            puzzlesSolved: 0,
+            puzzles: {
+                keypad: false,
+                orb: false,
+                pedestal: false
+            }
+        };
+
+        // Basic interaction system
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click listeners to all clickable elements
+            const clickables = document.querySelectorAll('.clickable');
+            clickables.forEach(element => {
+                element.addEventListener('click', handleClick);
+            });
+        });
+
+        function handleClick(event) {
+            const element = event.target;
+            const elementId = element.id;
+            
+            console.log('Clicked:', elementId);
+            
+            // Handle different types of interactions
+            if (element.classList.contains('collectible')) {
+                collectItem(element);
+            } else if (element.hasAttribute('puzzle')) {
+                handlePuzzle(element);
+            } else if (element.hasAttribute('door')) {
+                handleDoor(element);
+            }
+        }
+
+        function collectItem(element) {
+            // TODO: Add item to inventory
+            console.log('Collecting item:', element.id);
+            // Remove from scene and add to inventory
+        }
+
+        function handlePuzzle(element) {
+            // TODO: Handle puzzle interactions
+            console.log('Interacting with puzzle:', element.id);
+        }
+
+        function handleDoor(element) {
+            // TODO: Check if door can be opened
+            console.log('Trying to open door');
+        }
+
+        function updateInventoryDisplay() {
+            // TODO: Update inventory UI
+        }
+
+        function updateStatusText(message) {
+            document.getElementById('status-text').setAttribute('value', message);
+        }
+
+        function checkWinCondition() {
+            // TODO: Check if all puzzles are solved
+        }
+    </script>
+</body>
+</html>
