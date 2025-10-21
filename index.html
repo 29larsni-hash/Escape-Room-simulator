@@ -2,11 +2,11 @@
 <html>
 <head>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-    <title>Escape Room Game</title>
+    <title>Escape Room Game - Interactive</title>
 </head>
 <body>
     <a-scene background="color: #000">
-        <!-- Room Structure -->
+        <!-- Room Structure (same as before) -->
         <a-box id="floor" position="0 -0.5 0" width="10" height="0.1" depth="10" color="#8B4513"></a-box>
         <a-box id="wall-north" position="0 2.5 -5" width="10" height="5" depth="0.1" color="#D2B48C"></a-box>
         <a-box id="wall-south" position="0 2.5 5" width="10" height="5" depth="0.1" color="#D2B48C"></a-box>
@@ -17,25 +17,38 @@
         <a-light type="ambient" color="#404040"></a-light>
         <a-light type="point" position="0 4 0" color="#FFF"></a-light>
         
-        <!-- Puzzle Elements (placeholders) -->
-        <a-box id="puzzle1-keypad" position="-3 1.5 -4.9" width="1" height="1" depth="0.1" color="#333"
-               class="clickable" puzzle="type: keypad"></a-box>
+        <!-- Interactive Elements -->
         
-        <a-sphere id="puzzle2-orb" position="3 1 3" radius="0.3" color="#FF6B6B"
-                  class="clickable collectible" item="name: red-orb"></a-sphere>
+        <!-- Color-changing Button Puzzle -->
+        <a-cylinder id="color-button" position="-3 1 -4" radius="0.3" height="0.1" color="#FF0000"
+                    class="clickable" data-puzzle="color-sequence" data-state="0">
+        </a-cylinder>
+        <a-text id="color-hint" position="-3 2 -4" value="Click to change colors" color="#FFF" align="center"></a-text>
         
-        <a-cylinder id="puzzle3-pedestal" position="0 0.5 -3" radius="0.5" height="1" color="#8B7355"
-                    class="clickable" puzzle="type: pedestal"></a-cylinder>
+        <!-- Collectible Key (disappears when clicked) -->
+        <a-torus id="golden-key" position="3 1.2 2" radius="0.2" radius-tubular="0.05" color="#FFD700"
+                 class="clickable collectible" data-item="key">
+            <a-animation attribute="rotation" to="0 360 0" dur="3000" repeat="indefinite"></a-animation>
+        </a-torus>
+        <a-text id="key-label" position="3 1.8 2" value="Golden Key" color="#FFD700" align="center"></a-text>
         
-        <!-- Door (initially locked) -->
-        <a-box id="exit-door" position="0 1.5 4.9" width="2" height="3" depth="0.2" color="#8B4513"
-               class="clickable" door="locked: true"></a-box>
+        <!-- Lever that moves when clicked -->
+        <a-box id="lever" position="0 1.5 -4.8" width="0.1" height="0.8" depth="0.1" color="#8B4513"
+               class="clickable" data-puzzle="lever" data-state="down">
+        </a-box>
+        <a-text id="lever-hint" position="0 2.5 -4.5" value="Pull the lever" color="#FFF" align="center"></a-text>
         
-        <!-- UI Elements -->
-        <a-text id="status-text" position="-2 4 -3" value="Find 3 clues to escape!" color="#FFF"></a-text>
-        <a-text id="inventory-display" position="2 4 -3" value="Inventory: Empty" color="#FFF"></a-text>
+        <!-- Door that changes when conditions are met -->
+        <a-box id="exit-door" position="4.9 1.5 0" width="0.2" height="3" depth="2" color="#8B4513"
+               class="clickable" data-door="locked">
+        </a-box>
+        <a-text id="door-status" position="4.5 3 0" value="LOCKED" color="#FF0000" align="center"></a-text>
         
-        <!-- Camera with cursor -->
+        <!-- UI -->
+        <a-text id="status-text" position="-2 4.5 -3" value="Interact with objects to solve puzzles!" color="#FFF"></a-text>
+        <a-text id="inventory-display" position="2 4.5 -3" value="Inventory: Empty" color="#FFF"></a-text>
+        
+        <!-- Camera -->
         <a-camera position="0 1.6 0">
             <a-cursor color="#FFF" raycaster="objects: .clickable"></a-cursor>
         </a-camera>
@@ -45,17 +58,18 @@
         // Game State
         const gameState = {
             inventory: [],
-            puzzlesSolved: 0,
             puzzles: {
-                keypad: false,
-                orb: false,
-                pedestal: false
+                colorSequence: 0,  // 0=red, 1=blue, 2=green, 3=solved
+                leverPulled: false,
+                hasKey: false
             }
         };
 
-        // Basic interaction system
+        // Color sequence for the button puzzle
+        const colorSequence = ['#FF0000', '#0000FF', '#00FF00', '#FFD700']; // Red, Blue, Green, Gold
+        const colorNames = ['Red', 'Blue', 'Green', 'Gold'];
+
         document.addEventListener('DOMContentLoaded', function() {
-            // Add click listeners to all clickable elements
             const clickables = document.querySelectorAll('.clickable');
             clickables.forEach(element => {
                 element.addEventListener('click', handleClick);
@@ -68,42 +82,137 @@
             
             console.log('Clicked:', elementId);
             
-            // Handle different types of interactions
-            if (element.classList.contains('collectible')) {
-                collectItem(element);
-            } else if (element.hasAttribute('puzzle')) {
-                handlePuzzle(element);
-            } else if (element.hasAttribute('door')) {
-                handleDoor(element);
+            switch(elementId) {
+                case 'color-button':
+                    handleColorButton(element);
+                    break;
+                case 'golden-key':
+                    collectKey(element);
+                    break;
+                case 'lever':
+                    pullLever(element);
+                    break;
+                case 'exit-door':
+                    tryOpenDoor(element);
+                    break;
+            }
+            
+            checkWinConditions();
+        }
+
+        function handleColorButton(element) {
+            let currentState = parseInt(element.getAttribute('data-state'));
+            currentState = (currentState + 1) % colorSequence.length;
+            
+            // Change the button color
+            element.setAttribute('color', colorSequence[currentState]);
+            element.setAttribute('data-state', currentState.toString());
+            
+            // Update game state
+            gameState.puzzles.colorSequence = currentState;
+            
+            // Update hint text
+            const hint = document.getElementById('color-hint');
+            if (currentState === 3) {
+                hint.setAttribute('value', 'Color puzzle solved!');
+                hint.setAttribute('color', '#00FF00');
+                updateStatusText('Great! You solved the color puzzle!');
+            } else {
+                hint.setAttribute('value', `Current: ${colorNames[currentState]} - Keep clicking!`);
             }
         }
 
-        function collectItem(element) {
-            // TODO: Add item to inventory
-            console.log('Collecting item:', element.id);
-            // Remove from scene and add to inventory
+        function collectKey(element) {
+            if (!gameState.puzzles.hasKey) {
+                // Make key disappear with animation
+                element.setAttribute('animation', 'property: scale; to: 0 0 0; dur: 500');
+                
+                // Remove key label
+                const label = document.getElementById('key-label');
+                if (label) {
+                    label.setAttribute('animation', 'property: scale; to: 0 0 0; dur: 500');
+                }
+                
+                // Add to inventory
+                gameState.inventory.push('Golden Key');
+                gameState.puzzles.hasKey = true;
+                
+                // Update UI
+                updateInventoryDisplay();
+                updateStatusText('You found the Golden Key!');
+                
+                // Remove from scene after animation
+                setTimeout(() => {
+                    element.remove();
+                    if (label) label.remove();
+                }, 500);
+            }
         }
 
-        function handlePuzzle(element) {
-            // TODO: Handle puzzle interactions
-            console.log('Interacting with puzzle:', element.id);
+        function pullLever(element) {
+            const currentState = element.getAttribute('data-state');
+            
+            if (currentState === 'down') {
+                // Move lever up
+                element.setAttribute('animation', 'property: rotation; to: 45 0 0; dur: 500');
+                element.setAttribute('data-state', 'up');
+                gameState.puzzles.leverPulled = true;
+                
+                // Update hint
+                document.getElementById('lever-hint').setAttribute('value', 'Lever activated!');
+                document.getElementById('lever-hint').setAttribute('color', '#00FF00');
+                
+                updateStatusText('You pulled the lever! Something changed...');
+            } else {
+                // Move lever down
+                element.setAttribute('animation', 'property: rotation; to: 0 0 0; dur: 500');
+                element.setAttribute('data-state', 'down');
+                gameState.puzzles.leverPulled = false;
+                
+                // Update hint
+                document.getElementById('lever-hint').setAttribute('value', 'Pull the lever');
+                document.getElementById('lever-hint').setAttribute('color', '#FFF');
+            }
         }
 
-        function handleDoor(element) {
-            // TODO: Check if door can be opened
-            console.log('Trying to open door');
+        function tryOpenDoor(element) {
+            const doorStatus = document.getElementById('door-status');
+            
+            if (gameState.puzzles.hasKey && gameState.puzzles.leverPulled && gameState.puzzles.colorSequence === 3) {
+                // All conditions met - open door
+                element.setAttribute('animation', 'property: rotation; to: 0 90 0; dur: 1000');
+                element.setAttribute('color', '#00FF00');
+                doorStatus.setAttribute('value', 'OPEN!');
+                doorStatus.setAttribute('color', '#00FF00');
+                updateStatusText('Congratulations! You escaped!');
+            } else {
+                // Show what's needed
+                let missing = [];
+                if (!gameState.puzzles.hasKey) missing.push('Golden Key');
+                if (!gameState.puzzles.leverPulled) missing.push('Pull Lever');
+                if (gameState.puzzles.colorSequence !== 3) missing.push('Solve Color Puzzle');
+                
+                updateStatusText(`Door locked! Still need: ${missing.join(', ')}`);
+            }
         }
 
         function updateInventoryDisplay() {
-            // TODO: Update inventory UI
+            const display = document.getElementById('inventory-display');
+            if (gameState.inventory.length === 0) {
+                display.setAttribute('value', 'Inventory: Empty');
+            } else {
+                display.setAttribute('value', `Inventory: ${gameState.inventory.join(', ')}`);
+            }
         }
 
         function updateStatusText(message) {
             document.getElementById('status-text').setAttribute('value', message);
         }
 
-        function checkWinCondition() {
-            // TODO: Check if all puzzles are solved
+        function checkWinConditions() {
+            // This function runs after each interaction to check progress
+            const solved = Object.values(gameState.puzzles).filter(Boolean).length;
+            console.log('Puzzles progress:', gameState.puzzles);
         }
     </script>
 </body>
