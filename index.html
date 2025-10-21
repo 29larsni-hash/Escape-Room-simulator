@@ -2,217 +2,196 @@
 <html>
 <head>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-    <title>Escape Room Game - Interactive</title>
+    <title>Simple VR Escape Room</title>
 </head>
 <body>
-    <a-scene background="color: #000">
-        <!-- Room Structure (same as before) -->
-        <a-box id="floor" position="0 -0.5 0" width="10" height="0.1" depth="10" color="#8B4513"></a-box>
-        <a-box id="wall-north" position="0 2.5 -5" width="10" height="5" depth="0.1" color="#D2B48C"></a-box>
-        <a-box id="wall-south" position="0 2.5 5" width="10" height="5" depth="0.1" color="#D2B48C"></a-box>
-        <a-box id="wall-east" position="5 2.5 0" width="0.1" height="5" depth="10" color="#D2B48C"></a-box>
-        <a-box id="wall-west" position="-5 2.5 0" width="0.1" height="5" depth="10" color="#D2B48C"></a-box>
+    <a-scene vr-mode-ui="enabled: true" background="color: #001122">
+        <!-- Room -->
+        <a-box position="0 0 0" width="6" height="4" depth="6" 
+               material="color: #8B4513; side: back"></a-box>
+        <a-plane position="0 -2 0" width="6" height="6" rotation="-90 0 0" 
+                 color="#654321"></a-plane>
         
         <!-- Lighting -->
         <a-light type="ambient" color="#404040"></a-light>
-        <a-light type="point" position="0 4 0" color="#FFF"></a-light>
+        <a-light type="point" position="0 1.5 0" color="#FFF"></a-light>
         
-        <!-- Interactive Elements -->
+        <!-- VR Puzzle Elements -->
         
-        <!-- Color-changing Button Puzzle -->
-        <a-cylinder id="color-button" position="-3 1 -4" radius="0.3" height="0.1" color="#FF0000"
-                    class="clickable" data-puzzle="color-sequence" data-state="0">
+        <!-- 1. Color Button -->
+        <a-cylinder id="color-button" position="-2 0 -2.8" radius="0.3" height="0.2" 
+                   color="#FF0000" class="interactive" data-state="0">
         </a-cylinder>
-        <a-text id="color-hint" position="-3 2 -4" value="Click to change colors" color="#FFF" align="center"></a-text>
+        <a-text position="-2 1 -2.5" value="Touch to change color" align="center" color="#FFF"></a-text>
         
-        <!-- Collectible Key (disappears when clicked) -->
-        <a-torus id="golden-key" position="3 1.2 2" radius="0.2" radius-tubular="0.05" color="#FFD700"
-                 class="clickable collectible" data-item="key">
-            <a-animation attribute="rotation" to="0 360 0" dur="3000" repeat="indefinite"></a-animation>
+        <!-- 2. Collectible Key -->
+        <a-torus id="vr-key" position="2 0.5 2" radius="0.2" radius-tubular="0.05" 
+                color="#FFD700" class="interactive"
+                animation="property: rotation; to: 0 360 0; dur: 3000; repeat: indefinite">
         </a-torus>
-        <a-text id="key-label" position="3 1.8 2" value="Golden Key" color="#FFD700" align="center"></a-text>
+        <a-text position="2 1.2 2" value="Golden Key" align="center" color="#FFD700"></a-text>
         
-        <!-- Lever that moves when clicked -->
-        <a-box id="lever" position="0 1.5 -4.8" width="0.1" height="0.8" depth="0.1" color="#8B4513"
-               class="clickable" data-puzzle="lever" data-state="down">
+        <!-- 3. Lever -->
+        <a-box id="vr-lever" position="0 0 -2.8" width="0.1" height="0.8" depth="0.1" 
+               color="#8B4513" class="interactive" data-state="down">
         </a-box>
-        <a-text id="lever-hint" position="0 2.5 -4.5" value="Pull the lever" color="#FFF" align="center"></a-text>
+        <a-text position="0 1.2 -2.5" value="Pull lever up" align="center" color="#FFF"></a-text>
         
-        <!-- Door that changes when conditions are met -->
-        <a-box id="exit-door" position="4.9 1.5 0" width="0.2" height="3" depth="2" color="#8B4513"
-               class="clickable" data-door="locked">
+        <!-- Exit Door -->
+        <a-box id="vr-door" position="2.8 0 0" width="0.4" height="2" depth="1.5" 
+               color="#654321" class="interactive">
         </a-box>
-        <a-text id="door-status" position="4.5 3 0" value="LOCKED" color="#FF0000" align="center"></a-text>
+        <a-text id="door-text" position="2.5 1.5 0" value="LOCKED" align="center" color="#FF0000"></a-text>
         
-        <!-- UI -->
-        <a-text id="status-text" position="-2 4.5 -3" value="Interact with objects to solve puzzles!" color="#FFF"></a-text>
-        <a-text id="inventory-display" position="2 4.5 -3" value="Inventory: Empty" color="#FFF"></a-text>
+        <!-- VR Camera Setup -->
+        <a-entity id="cameraRig" position="0 0 0">
+            <a-camera position="0 1.6 2.5" look-controls wasd-controls>
+                <a-cursor color="#FFF" raycaster="objects: .interactive"></a-cursor>
+            </a-camera>
+            
+            <!-- VR Hand Controllers -->
+            <a-entity id="leftHand" 
+                      hand-controls="hand: left"
+                      raycaster="objects: .interactive"
+                      line="start: 0, 0, 0; end: 0 0 -3; color: blue; opacity: 0.5">
+            </a-entity>
+            
+            <a-entity id="rightHand" 
+                      hand-controls="hand: right"
+                      raycaster="objects: .interactive"
+                      line="start: 0, 0, 0; end: 0 0 -3; color: red; opacity: 0.5">
+            </a-entity>
+        </a-entity>
         
-        <!-- Camera -->
-        <a-camera position="0 1.6 0">
-            <a-cursor color="#FFF" raycaster="objects: .clickable"></a-cursor>
-        </a-camera>
+        <!-- Status Display -->
+        <a-text id="status" position="0 2.5 -2.8" value="Solve 3 puzzles to escape!" 
+                align="center" color="#FFF"></a-text>
     </a-scene>
 
     <script>
-        // Game State
         const gameState = {
-            inventory: [],
-            puzzles: {
-                colorSequence: 0,  // 0=red, 1=blue, 2=green, 3=solved
-                leverPulled: false,
-                hasKey: false
-            }
+            colorSolved: false,
+            hasKey: false,
+            leverUp: false
         };
 
-        // Color sequence for the button puzzle
-        const colorSequence = ['#FF0000', '#0000FF', '#00FF00', '#FFD700']; // Red, Blue, Green, Gold
-        const colorNames = ['Red', 'Blue', 'Green', 'Gold'];
+        const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFD700']; // Red, Green, Blue, Gold
 
         document.addEventListener('DOMContentLoaded', function() {
-            const clickables = document.querySelectorAll('.clickable');
-            clickables.forEach(element => {
-                element.addEventListener('click', handleClick);
-            });
+            // Setup click events for VR and desktop
+            setupInteractions();
         });
 
-        function handleClick(event) {
+        function setupInteractions() {
+            const interactives = document.querySelectorAll('.interactive');
+            
+            interactives.forEach(element => {
+                // Works for both VR controllers and mouse clicks
+                element.addEventListener('click', handleInteraction);
+                element.addEventListener('triggerdown', handleInteraction);
+                
+                // Visual feedback on hover (works in VR too)
+                element.addEventListener('mouseenter', function() {
+                    element.setAttribute('scale', '1.1 1.1 1.1');
+                });
+                
+                element.addEventListener('mouseleave', function() {
+                    element.setAttribute('scale', '1 1 1');
+                });
+            });
+        }
+
+        function handleInteraction(event) {
             const element = event.target;
-            const elementId = element.id;
             
-            console.log('Clicked:', elementId);
-            
-            switch(elementId) {
+            switch(element.id) {
                 case 'color-button':
-                    handleColorButton(element);
+                    cycleColor(element);
                     break;
-                case 'golden-key':
+                case 'vr-key':
                     collectKey(element);
                     break;
-                case 'lever':
-                    pullLever(element);
+                case 'vr-lever':
+                    toggleLever(element);
                     break;
-                case 'exit-door':
-                    tryOpenDoor(element);
+                case 'vr-door':
+                    checkDoor();
                     break;
             }
             
-            checkWinConditions();
+            updateStatus();
         }
 
-        function handleColorButton(element) {
-            let currentState = parseInt(element.getAttribute('data-state'));
-            currentState = (currentState + 1) % colorSequence.length;
+        function cycleColor(button) {
+            let state = parseInt(button.getAttribute('data-state') || '0');
+            state = (state + 1) % colors.length;
             
-            // Change the button color
-            element.setAttribute('color', colorSequence[currentState]);
-            element.setAttribute('data-state', currentState.toString());
+            button.setAttribute('color', colors[state]);
+            button.setAttribute('data-state', state.toString());
             
-            // Update game state
-            gameState.puzzles.colorSequence = currentState;
+            // Puzzle solved when gold (index 3)
+            gameState.colorSolved = (state === 3);
             
-            // Update hint text
-            const hint = document.getElementById('color-hint');
-            if (currentState === 3) {
-                hint.setAttribute('value', 'Color puzzle solved!');
-                hint.setAttribute('color', '#00FF00');
-                updateStatusText('Great! You solved the color puzzle!');
+            if (gameState.colorSolved) {
+                updateStatus('Color puzzle solved!');
+            }
+        }
+
+        function collectKey(key) {
+            if (!gameState.hasKey) {
+                key.setAttribute('animation', 'property: scale; to: 0 0 0; dur: 500');
+                gameState.hasKey = true;
+                updateStatus('Key collected!');
+                
+                setTimeout(() => key.remove(), 500);
+            }
+        }
+
+        function toggleLever(lever) {
+            const state = lever.getAttribute('data-state');
+            
+            if (state === 'down') {
+                lever.setAttribute('rotation', '45 0 0');
+                lever.setAttribute('data-state', 'up');
+                gameState.leverUp = true;
+                updateStatus('Lever pulled up!');
             } else {
-                hint.setAttribute('value', `Current: ${colorNames[currentState]} - Keep clicking!`);
+                lever.setAttribute('rotation', '0 0 0');
+                lever.setAttribute('data-state', 'down');
+                gameState.leverUp = false;
             }
         }
 
-        function collectKey(element) {
-            if (!gameState.puzzles.hasKey) {
-                // Make key disappear with animation
-                element.setAttribute('animation', 'property: scale; to: 0 0 0; dur: 500');
+        function checkDoor() {
+            if (gameState.colorSolved && gameState.hasKey && gameState.leverUp) {
+                // All puzzles solved!
+                const door = document.getElementById('vr-door');
+                const doorText = document.getElementById('door-text');
                 
-                // Remove key label
-                const label = document.getElementById('key-label');
-                if (label) {
-                    label.setAttribute('animation', 'property: scale; to: 0 0 0; dur: 500');
-                }
+                door.setAttribute('animation', 'property: rotation; to: 0 90 0; dur: 1000');
+                door.setAttribute('color', '#00FF00');
+                doorText.setAttribute('value', 'ESCAPED!');
+                doorText.setAttribute('color', '#00FF00');
                 
-                // Add to inventory
-                gameState.inventory.push('Golden Key');
-                gameState.puzzles.hasKey = true;
-                
-                // Update UI
-                updateInventoryDisplay();
-                updateStatusText('You found the Golden Key!');
-                
-                // Remove from scene after animation
-                setTimeout(() => {
-                    element.remove();
-                    if (label) label.remove();
-                }, 500);
-            }
-        }
-
-        function pullLever(element) {
-            const currentState = element.getAttribute('data-state');
-            
-            if (currentState === 'down') {
-                // Move lever up
-                element.setAttribute('animation', 'property: rotation; to: 45 0 0; dur: 500');
-                element.setAttribute('data-state', 'up');
-                gameState.puzzles.leverPulled = true;
-                
-                // Update hint
-                document.getElementById('lever-hint').setAttribute('value', 'Lever activated!');
-                document.getElementById('lever-hint').setAttribute('color', '#00FF00');
-                
-                updateStatusText('You pulled the lever! Something changed...');
+                updateStatus('🎉 YOU ESCAPED! 🎉');
             } else {
-                // Move lever down
-                element.setAttribute('animation', 'property: rotation; to: 0 0 0; dur: 500');
-                element.setAttribute('data-state', 'down');
-                gameState.puzzles.leverPulled = false;
+                let needed = [];
+                if (!gameState.colorSolved) needed.push('Color Puzzle');
+                if (!gameState.hasKey) needed.push('Golden Key');
+                if (!gameState.leverUp) needed.push('Pull Lever');
                 
-                // Update hint
-                document.getElementById('lever-hint').setAttribute('value', 'Pull the lever');
-                document.getElementById('lever-hint').setAttribute('color', '#FFF');
+                updateStatus(`Still need: ${needed.join(', ')}`);
             }
         }
 
-        function tryOpenDoor(element) {
-            const doorStatus = document.getElementById('door-status');
-            
-            if (gameState.puzzles.hasKey && gameState.puzzles.leverPulled && gameState.puzzles.colorSequence === 3) {
-                // All conditions met - open door
-                element.setAttribute('animation', 'property: rotation; to: 0 90 0; dur: 1000');
-                element.setAttribute('color', '#00FF00');
-                doorStatus.setAttribute('value', 'OPEN!');
-                doorStatus.setAttribute('color', '#00FF00');
-                updateStatusText('Congratulations! You escaped!');
+        function updateStatus(message) {
+            const status = document.getElementById('status');
+            if (message) {
+                status.setAttribute('value', message);
             } else {
-                // Show what's needed
-                let missing = [];
-                if (!gameState.puzzles.hasKey) missing.push('Golden Key');
-                if (!gameState.puzzles.leverPulled) missing.push('Pull Lever');
-                if (gameState.puzzles.colorSequence !== 3) missing.push('Solve Color Puzzle');
-                
-                updateStatusText(`Door locked! Still need: ${missing.join(', ')}`);
+                const solved = Object.values(gameState).filter(Boolean).length;
+                status.setAttribute('value', `Progress: ${solved}/3 puzzles solved`);
             }
-        }
-
-        function updateInventoryDisplay() {
-            const display = document.getElementById('inventory-display');
-            if (gameState.inventory.length === 0) {
-                display.setAttribute('value', 'Inventory: Empty');
-            } else {
-                display.setAttribute('value', `Inventory: ${gameState.inventory.join(', ')}`);
-            }
-        }
-
-        function updateStatusText(message) {
-            document.getElementById('status-text').setAttribute('value', message);
-        }
-
-        function checkWinConditions() {
-            // This function runs after each interaction to check progress
-            const solved = Object.values(gameState.puzzles).filter(Boolean).length;
-            console.log('Puzzles progress:', gameState.puzzles);
         }
     </script>
 </body>
