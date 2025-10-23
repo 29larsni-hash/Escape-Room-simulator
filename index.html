@@ -2,54 +2,134 @@
 <html>
 <head>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-    <title>Simple VR Escape Room</title>
+    <title>Advanced VR Escape Room - Puzzle Chain</title>
 </head>
 <body>
     <a-scene vr-mode-ui="enabled: true" background="color: #001122">
         <!-- Room -->
-        <a-box position="0 0 0" width="6" height="4" depth="6" 
+        <a-box position="0 0 0" width="8" height="4" depth="8" 
                material="color: #8B4513; side: back"></a-box>
-        <a-plane position="0 -2 0" width="6" height="6" rotation="-90 0 0" 
+        <a-plane position="0 -2 0" width="8" height="8" rotation="-90 0 0" 
                  color="#654321"></a-plane>
         
         <!-- Lighting -->
         <a-light type="ambient" color="#404040"></a-light>
         <a-light type="point" position="0 1.5 0" color="#FFF"></a-light>
         
-        <!-- VR Puzzle Elements -->
+        <!-- PUZZLE 1: Pattern Memory Panel (reveals Silver Key) -->
+        <a-entity id="pattern-panel" position="-3.5 0.5 -3.5">
+            <a-box width="1.5" height="1" depth="0.1" color="#333"></a-box>
+            <a-text position="0 0.7 0.1" value="Pattern Memory" align="center" color="#FFF"></a-text>
+            
+            <!-- Pattern buttons in 2x2 grid -->
+            <a-cylinder id="pattern-btn-1" position="-0.3 0.2 0.1" radius="0.1" height="0.05" 
+                       color="#FF0000" class="interactive pattern-btn" data-pattern="1"></a-cylinder>
+            <a-cylinder id="pattern-btn-2" position="0.3 0.2 0.1" radius="0.1" height="0.05" 
+                       color="#FF0000" class="interactive pattern-btn" data-pattern="2"></a-cylinder>
+            <a-cylinder id="pattern-btn-3" position="-0.3 -0.2 0.1" radius="0.1" height="0.05" 
+                       color="#FF0000" class="interactive pattern-btn" data-pattern="3"></a-cylinder>
+            <a-cylinder id="pattern-btn-4" position="0.3 -0.2 0.1" radius="0.1" height="0.05" 
+                       color="#FF0000" class="interactive pattern-btn" data-pattern="4"></a-cylinder>
+        </a-entity>
         
-        <!-- 1. Color Button -->
-        <a-cylinder id="color-button" position="-2 0 -2.8" radius="0.3" height="0.2" 
-                   color="#FF0000" class="interactive" data-state="0">
-        </a-cylinder>
-        <a-text position="-2 1 -2.5" value="Touch to change color" align="center" color="#FFF"></a-text>
+        <!-- Silver Key (hidden initially) -->
+        <a-torus id="silver-key" position="-3.5 0.5 -2.8" radius="0.15" radius-tubular="0.04" 
+                color="#C0C0C0" class="interactive" visible="false"
+                animation="property: rotation; to: 0 360 0; dur: 2000; repeat: indefinite">
+        </a-torus>
         
-        <!-- 2. Collectible Key -->
-        <a-torus id="vr-key" position="2 0.5 2" radius="0.2" radius-tubular="0.05" 
-                color="#FFD700" class="interactive"
+        <!-- PUZZLE 2: Combination Safe (needs Silver Key, reveals tools) -->
+        <a-entity id="safe" position="3.5 0 -3.5">
+            <a-box width="1.2" height="1.5" depth="0.8" color="#2F4F4F"></a-box>
+            <a-text position="0 1 0.5" value="Safe - Need Silver Key" align="center" color="#FFF"></a-text>
+            
+            <!-- Combination dials -->
+            <a-cylinder id="dial-1" position="-0.3 0.2 0.45" radius="0.15" height="0.05" 
+                       color="#FFD700" class="interactive dial" data-value="0" data-target="7"></a-cylinder>
+            <a-cylinder id="dial-2" position="0 0.2 0.45" radius="0.15" height="0.05" 
+                       color="#FFD700" class="interactive dial" data-value="0" data-target="3"></a-cylinder>
+            <a-cylinder id="dial-3" position="0.3 0.2 0.45" radius="0.15" height="0.05" 
+                       color="#FFD700" class="interactive dial" data-value="0" data-target="9"></a-cylinder>
+            
+            <!-- Keyhole -->
+            <a-cylinder id="keyhole" position="0 -0.3 0.45" radius="0.05" height="0.05" 
+                       color="#000" class="interactive"></a-cylinder>
+        </a-entity>
+        
+        <!-- PUZZLE 3: Mechanical Contraption (needs tools from safe) -->
+        <a-entity id="contraption" position="0 0.5 3.5">
+            <a-box width="2" height="1" depth="0.3" color="#8B4513"></a-box>
+            <a-text position="0 0.7 0.2" value="Mechanical Lock" align="center" color="#FFF"></a-text>
+            
+            <!-- Gears that need to be aligned -->
+            <a-torus id="gear-1" position="-0.5 0 0.2" radius="0.2" radius-tubular="0.03" 
+                    color="#B8860B" class="interactive gear" data-rotation="0"></a-torus>
+            <a-torus id="gear-2" position="0 0 0.2" radius="0.2" radius-tubular="0.03" 
+                    color="#B8860B" class="interactive gear" data-rotation="0"></a-torus>
+            <a-torus id="gear-3" position="0.5 0 0.2" radius="0.2" radius-tubular="0.03" 
+                    color="#B8860B" class="interactive gear" data-rotation="0"></a-torus>
+            
+            <!-- Tool slots -->
+            <a-box id="wrench-slot" position="-0.7 -0.3 0.2" width="0.1" height="0.2" depth="0.05" 
+                   color="#FF6B6B" class="interactive"></a-box>
+            <a-box id="screwdriver-slot" position="0.7 -0.3 0.2" width="0.1" height="0.2" depth="0.05" 
+                   color="#4ECDC4" class="interactive"></a-box>
+        </a-entity>
+        
+        <!-- PUZZLE 4: Color Sequence Lock (needs Golden Key from contraption) -->
+        <a-entity id="sequence-lock" position="-3.5 0.5 3.5">
+            <a-box width="1.5" height="1.2" depth="0.1" color="#2C3E50"></a-box>
+            <a-text position="0 0.8 0.1" value="Sequence Lock" align="center" color="#FFF"></a-text>
+            
+            <!-- Color sequence buttons -->
+            <a-sphere id="seq-btn-1" position="-0.4 0.2 0.1" radius="0.08" 
+                     color="#FF0000" class="interactive seq-btn" data-seq="1" data-state="red"></a-sphere>
+            <a-sphere id="seq-btn-2" position="-0.1 0.2 0.1" radius="0.08" 
+                     color="#FF0000" class="interactive seq-btn" data-seq="2" data-state="red"></a-sphere>
+            <a-sphere id="seq-btn-3" position="0.2 0.2 0.1" radius="0.08" 
+                     color="#FF0000" class="interactive seq-btn" data-seq="3" data-state="red"></a-sphere>
+            <a-sphere id="seq-btn-4" position="-0.4 -0.1 0.1" radius="0.08" 
+                     color="#FF0000" class="interactive seq-btn" data-seq="4" data-state="red"></a-sphere>
+            <a-sphere id="seq-btn-5" position="-0.1 -0.1 0.1" radius="0.08" 
+                     color="#FF0000" class="interactive seq-btn" data-seq="5" data-state="red"></a-sphere>
+            <a-sphere id="seq-btn-6" position="0.2 -0.1 0.1" radius="0.08" 
+                     color="#FF0000" class="interactive seq-btn" data-seq="6" data-state="red"></a-sphere>
+                     
+            <!-- Golden keyhole -->
+            <a-cylinder id="golden-keyhole" position="0 -0.4 0.1" radius="0.06" height="0.05" 
+                       color="#FFD700" class="interactive"></a-cylinder>
+        </a-entity>
+        
+        <!-- Tools (hidden initially, revealed by safe) -->
+        <a-box id="wrench" position="3.5 -0.5 -3" width="0.05" height="0.3" depth="0.05" 
+               color="#FF6B6B" class="interactive tool" visible="false"></a-box>
+        <a-box id="screwdriver" position="3.8 -0.5 -3" width="0.03" height="0.25" depth="0.03" 
+               color="#4ECDC4" class="interactive tool" visible="false"></a-box>
+        
+        <!-- Golden Key (from contraption) -->
+        <a-torus id="golden-key" position="0 0.2 3.8" radius="0.18" radius-tubular="0.05" 
+                color="#FFD700" class="interactive" visible="false"
+                animation="property: rotation; to: 0 360 0; dur: 2500; repeat: indefinite">
+        </a-torus>
+        
+        <!-- Master Key (final reward) -->
+        <a-torus id="master-key" position="-3.5 0.2 3.8" radius="0.2" radius-tubular="0.06" 
+                color="#FF1493" class="interactive" visible="false"
                 animation="property: rotation; to: 0 360 0; dur: 3000; repeat: indefinite">
         </a-torus>
-        <a-text position="2 1.2 2" value="Golden Key" align="center" color="#FFD700"></a-text>
-        
-        <!-- 3. Lever -->
-        <a-box id="vr-lever" position="0 0 -2.8" width="0.1" height="0.8" depth="0.1" 
-               color="#8B4513" class="interactive" data-state="down">
-        </a-box>
-        <a-text position="0 1.2 -2.5" value="Pull lever up" align="center" color="#FFF"></a-text>
         
         <!-- Exit Door -->
-        <a-box id="vr-door" position="2.8 0 0" width="0.4" height="2" depth="1.5" 
+        <a-box id="exit-door" position="3.8 0 0" width="0.4" height="2.5" depth="2" 
                color="#654321" class="interactive">
         </a-box>
-        <a-text id="door-text" position="2.5 1.5 0" value="LOCKED" align="center" color="#FF0000"></a-text>
+        <a-text id="door-status" position="3.5 1.8 0" value="LOCKED - Need Master Key" align="center" color="#FF0000"></a-text>
         
         <!-- VR Camera Setup -->
         <a-entity id="cameraRig" position="0 0 0">
-            <a-camera position="0 1.6 2.5" look-controls wasd-controls>
+            <a-camera position="0 1.6 1" look-controls wasd-controls>
                 <a-cursor color="#FFF" raycaster="objects: .interactive"></a-cursor>
             </a-camera>
             
-            <!-- VR Hand Controllers -->
             <a-entity id="leftHand" 
                       hand-controls="hand: left"
                       raycaster="objects: .interactive"
@@ -64,33 +144,44 @@
         </a-entity>
         
         <!-- Status Display -->
-        <a-text id="status" position="0 2.5 -2.8" value="Solve 3 puzzles to escape!" 
+        <a-text id="status" position="0 3 -3.8" value="Solve the puzzle chain to escape!" 
                 align="center" color="#FFF"></a-text>
     </a-scene>
 
     <script>
         const gameState = {
-            colorSolved: false,
-            hasKey: false,
-            leverUp: false
+            patternSolved: false,
+            hasSilverKey: false,
+            safeSolved: false,
+            hasTools: false,
+            contraptionSolved: false,
+            hasGoldenKey: false,
+            sequenceSolved: false,
+            hasMasterKey: false,
+            escaped: false
         };
 
-        const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFD700']; // Red, Green, Blue, Gold
+        // Puzzle solutions
+        const correctPattern = [1, 3, 2, 4]; // Sequence to press buttons
+        const correctSequence = ['blue', 'green', 'yellow', 'blue', 'green', 'red']; // Color sequence
+        const sequenceColors = ['red', 'blue', 'green', 'yellow'];
+        
+        let patternInput = [];
+        let sequenceInput = [];
+        let toolsEquipped = { wrench: false, screwdriver: false };
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Setup click events for VR and desktop
             setupInteractions();
+            showPatternDemo();
         });
 
         function setupInteractions() {
             const interactives = document.querySelectorAll('.interactive');
             
             interactives.forEach(element => {
-                // Works for both VR controllers and mouse clicks
                 element.addEventListener('click', handleInteraction);
                 element.addEventListener('triggerdown', handleInteraction);
                 
-                // Visual feedback on hover (works in VR too)
                 element.addEventListener('mouseenter', function() {
                     element.setAttribute('scale', '1.1 1.1 1.1');
                 });
@@ -103,84 +194,316 @@
 
         function handleInteraction(event) {
             const element = event.target;
+            const id = element.id;
             
-            switch(element.id) {
-                case 'color-button':
-                    cycleColor(element);
-                    break;
-                case 'vr-key':
-                    collectKey(element);
-                    break;
-                case 'vr-lever':
-                    toggleLever(element);
-                    break;
-                case 'vr-door':
-                    checkDoor();
-                    break;
+            // Pattern Memory Puzzle
+            if (element.classList.contains('pattern-btn') && !gameState.patternSolved) {
+                handlePatternButton(element);
+            }
+            
+            // Safe interactions
+            else if (element.classList.contains('dial') && gameState.hasSilverKey) {
+                rotateDial(element);
+            }
+            else if (id === 'keyhole' && gameState.hasSilverKey) {
+                checkSafeCombination();
+            }
+            
+            // Tool collection
+            else if (element.classList.contains('tool') && gameState.safeSolved) {
+                collectTool(element);
+            }
+            
+            // Contraption interactions
+            else if (element.classList.contains('gear') && toolsEquipped.wrench && toolsEquipped.screwdriver) {
+                rotateGear(element);
+            }
+            else if (id === 'wrench-slot' && gameState.hasTools) {
+                equipTool('wrench');
+            }
+            else if (id === 'screwdriver-slot' && gameState.hasTools) {
+                equipTool('screwdriver');
+            }
+            
+            // Sequence lock
+            else if (element.classList.contains('seq-btn') && gameState.hasGoldenKey) {
+                cycleSequenceButton(element);
+            }
+            else if (id === 'golden-keyhole' && gameState.hasGoldenKey) {
+                checkSequence();
+            }
+            
+            // Key collection
+            else if (id === 'silver-key') {
+                collectKey('silver');
+            }
+            else if (id === 'golden-key') {
+                collectKey('golden');
+            }
+            else if (id === 'master-key') {
+                collectKey('master');
+            }
+            
+            // Exit door
+            else if (id === 'exit-door') {
+                checkExit();
             }
             
             updateStatus();
         }
 
-        function cycleColor(button) {
-            let state = parseInt(button.getAttribute('data-state') || '0');
-            state = (state + 1) % colors.length;
+        // PUZZLE 1: Pattern Memory
+        function showPatternDemo() {
+            const buttons = document.querySelectorAll('.pattern-btn');
+            let step = 0;
             
-            button.setAttribute('color', colors[state]);
-            button.setAttribute('data-state', state.toString());
-            
-            // Puzzle solved when gold (index 3)
-            gameState.colorSolved = (state === 3);
-            
-            if (gameState.colorSolved) {
-                updateStatus('Color puzzle solved!');
-            }
+            const demo = setInterval(() => {
+                if (step < correctPattern.length) {
+                    const btn = document.getElementById(`pattern-btn-${correctPattern[step]}`);
+                    btn.setAttribute('color', '#00FF00');
+                   setTimeout(() => {
+                        btn.setAttribute('color', '#FF0000');
+                    }, 500);
+                    step++;
+                } else {
+                    clearInterval(demo);
+                    updateStatus('Repeat the pattern you just saw!');
+                }
+            }, 800);
         }
 
-        function collectKey(key) {
-            if (!gameState.hasKey) {
-                key.setAttribute('animation', 'property: scale; to: 0 0 0; dur: 500');
-                gameState.hasKey = true;
-                updateStatus('Key collected!');
+        function handlePatternButton(button) {
+            const patternNum = parseInt(button.getAttribute('data-pattern'));
+            patternInput.push(patternNum);
+            
+            // Visual feedback
+            button.setAttribute('color', '#00FF00');
+            setTimeout(() => {
+                button.setAttribute('color', '#FF0000');
+            }, 200);
+            
+            // Check if pattern matches so far
+            if (patternInput.length <= correctPattern.length) {
+                let correct = true;
+                for (let i = 0; i < patternInput.length; i++) {
+                    if (patternInput[i] !== correctPattern[i]) {
+                        correct = false;
+                        break;
+                    }
+                }
                 
-                setTimeout(() => key.remove(), 500);
+                if (!correct) {
+                    // Wrong pattern, reset
+                    patternInput = [];
+                    updateStatus('Wrong pattern! Try again.');
+                    setTimeout(() => showPatternDemo(), 1000);
+                } else if (patternInput.length === correctPattern.length) {
+                    // Pattern complete!
+                    gameState.patternSolved = true;
+                    document.getElementById('silver-key').setAttribute('visible', 'true');
+                    updateStatus('Pattern solved! Silver key revealed!');
+                }
             }
         }
 
-        function toggleLever(lever) {
-            const state = lever.getAttribute('data-state');
+        // PUZZLE 2: Safe with Combination
+        function rotateDial(dial) {
+            let value = parseInt(dial.getAttribute('data-value'));
+            value = (value + 1) % 10;
+            dial.setAttribute('data-value', value.toString());
+            dial.setAttribute('rotation', `0 0 ${value * 36}`); // 360/10 = 36 degrees per number
             
-            if (state === 'down') {
-                lever.setAttribute('rotation', '45 0 0');
-                lever.setAttribute('data-state', 'up');
-                gameState.leverUp = true;
-                updateStatus('Lever pulled up!');
+            // Show number on dial
+            let numberDisplay = dial.querySelector('a-text');
+            if (!numberDisplay) {
+                numberDisplay = document.createElement('a-text');
+                numberDisplay.setAttribute('position', '0 0 0.03');
+                numberDisplay.setAttribute('align', 'center');
+                numberDisplay.setAttribute('color', '#000');
+                dial.appendChild(numberDisplay);
+            }
+            numberDisplay.setAttribute('value', value.toString());
+        }
+
+        function checkSafeCombination() {
+            const dial1 = parseInt(document.getElementById('dial-1').getAttribute('data-value'));
+            const dial2 = parseInt(document.getElementById('dial-2').getAttribute('data-value'));
+            const dial3 = parseInt(document.getElementById('dial-3').getAttribute('data-value'));
+            
+            if (dial1 === 7 && dial2 === 3 && dial3 === 9) {
+                gameState.safeSolved = true;
+                gameState.hasTools = true;
+                
+                // Reveal tools
+                document.getElementById('wrench').setAttribute('visible', 'true');
+                document.getElementById('screwdriver').setAttribute('visible', 'true');
+                
+                // Safe opening animation
+                const safe = document.getElementById('safe');
+                safe.setAttribute('animation', 'property: rotation; to: 0 45 0; dur: 1000');
+                
+                updateStatus('Safe opened! Tools revealed!');
             } else {
-                lever.setAttribute('rotation', '0 0 0');
-                lever.setAttribute('data-state', 'down');
-                gameState.leverUp = false;
+                updateStatus(`Combination: ${dial1}-${dial2}-${dial3}. Try 7-3-9!`);
             }
         }
 
-        function checkDoor() {
-            if (gameState.colorSolved && gameState.hasKey && gameState.leverUp) {
-                // All puzzles solved!
-                const door = document.getElementById('vr-door');
-                const doorText = document.getElementById('door-text');
+        // Tool System
+        function collectTool(tool) {
+            tool.setAttribute('animation', 'property: scale; to: 0 0 0; dur: 500');
+            setTimeout(() => tool.remove(), 500);
+            updateStatus(`${tool.id} collected!`);
+        }
+
+        function equipTool(toolType) {
+            toolsEquipped[toolType] = true;
+            const slot = document.getElementById(`${toolType}-slot`);
+            slot.setAttribute('color', '#00FF00');
+            
+            if (toolsEquipped.wrench && toolsEquipped.screwdriver) {
+                updateStatus('Both tools equipped! You can now operate the gears!');
+            } else {
+                updateStatus(`${toolType} equipped! Need both tools to operate gears.`);
+            }
+        }
+
+        // PUZZLE 3: Mechanical Contraption
+        function rotateGear(gear) {
+            let rotation = parseInt(gear.getAttribute('data-rotation'));
+            rotation = (rotation + 60) % 360; // Rotate by 60 degrees (6 positions)
+            gear.setAttribute('data-rotation', rotation.toString());
+            gear.setAttribute('rotation', `0 0 ${rotation}`);
+            
+            checkGearAlignment();
+        }
+
+        function checkGearAlignment() {
+            const gear1Rot = parseInt(document.getElementById('gear-1').getAttribute('data-rotation'));
+            const gear2Rot = parseInt(document.getElementById('gear-2').getAttribute('data-rotation'));
+            const gear3Rot = parseInt(document.getElementById('gear-3').getAttribute('data-rotation'));
+            
+            // All gears need to be at 180 degrees (upside down)
+            if (gear1Rot === 180 && gear2Rot === 180 && gear3Rot === 180) {
+                gameState.contraptionSolved = true;
+                gameState.hasGoldenKey = true;
                 
-                door.setAttribute('animation', 'property: rotation; to: 0 90 0; dur: 1000');
+                document.getElementById('golden-key').setAttribute('visible', 'true');
+                
+                // Success animation
+                document.querySelectorAll('.gear').forEach(gear => {
+                    gear.setAttribute('color', '#00FF00');
+                });
+                
+                updateStatus('Gears aligned! Golden key revealed!');
+            }
+        }
+
+        // PUZZLE 4: Color Sequence Lock
+        function cycleSequenceButton(button) {
+            const currentState = button.getAttribute('data-state');
+            const currentIndex = sequenceColors.indexOf(currentState);
+            const nextIndex = (currentIndex + 1) % sequenceColors.length;
+            const nextColor = sequenceColors[nextIndex];
+            
+            button.setAttribute('data-state', nextColor);
+            button.setAttribute('color', getColorHex(nextColor));
+        }
+
+        function getColorHex(colorName) {
+            const colorMap = {
+                'red': '#FF0000',
+                'blue': '#0000FF',
+                'green': '#00FF00',
+                'yellow': '#FFFF00'
+            };
+            return colorMap[colorName];
+        }
+
+        function checkSequence() {
+            sequenceInput = [];
+            for (let i = 1; i <= 6; i++) {
+                const button = document.getElementById(`seq-btn-${i}`);
+                sequenceInput.push(button.getAttribute('data-state'));
+            }
+            
+            let correct = true;
+            for (let i = 0; i < correctSequence.length; i++) {
+                if (sequenceInput[i] !== correctSequence[i]) {
+                    correct = false;
+                    break;
+                }
+            }
+            
+            if (correct) {
+                gameState.sequenceSolved = true;
+                gameState.hasMasterKey = true;
+                
+                document.getElementById('master-key').setAttribute('visible', 'true');
+                
+                // Success animation
+                document.querySelectorAll('.seq-btn').forEach(btn => {
+                    btn.setAttribute('animation', 'property: scale; to: 1.2 1.2 1.2; dur: 500; repeat: 2; direction: alternate');
+                });
+                
+                updateStatus('Sequence correct! Master key revealed!');
+            } else {
+                updateStatus(`Wrong sequence! Need: ${correctSequence.join('-')}`);
+            }
+        }
+
+        // Key Collection System
+        function collectKey(keyType) {
+            const keyElement = document.getElementById(`${keyType}-key`);
+            keyElement.setAttribute('animation', 'property: position; to: 0 2 0; dur: 1000');
+            
+            setTimeout(() => {
+                keyElement.setAttribute('animation', 'property: scale; to: 0 0 0; dur: 500');
+                setTimeout(() => keyElement.remove(), 500);
+            }, 1000);
+            
+            if (keyType === 'silver') {
+                gameState.hasSilverKey = true;
+                updateStatus('Silver key collected! You can now open the safe.');
+            } else if (keyType === 'golden') {
+                gameState.hasGoldenKey = true;
+                updateStatus('Golden key collected! You can now use the sequence lock.');
+            } else if (keyType === 'master') {
+                gameState.hasMasterKey = true;
+                updateStatus('Master key collected! You can now escape!');
+            }
+        }
+
+        // Exit System
+        function checkExit() {
+            if (gameState.hasMasterKey) {
+                gameState.escaped = true;
+                
+                const door = document.getElementById('exit-door');
+                const doorStatus = document.getElementById('door-status');
+                
+                door.setAttribute('animation', 'property: rotation; to: 0 90 0; dur: 2000');
                 door.setAttribute('color', '#00FF00');
-                doorText.setAttribute('value', 'ESCAPED!');
-                doorText.setAttribute('color', '#00FF00');
+                doorStatus.setAttribute('value', '🎉 ESCAPED! 🎉');
+                doorStatus.setAttribute('color', '#00FF00');
                 
-                updateStatus('🎉 YOU ESCAPED! 🎉');
+                updateStatus('🎉 CONGRATULATIONS! You solved all puzzles and escaped! 🎉');
+                
+                // Celebration effects
+                setTimeout(() => {
+                    document.querySelectorAll('.interactive').forEach(element => {
+                        element.setAttribute('animation', 'property: rotation; to: 0 720 0; dur: 3000');
+                    });
+                }, 500);
+                
             } else {
                 let needed = [];
-                if (!gameState.colorSolved) needed.push('Color Puzzle');
-                if (!gameState.hasKey) needed.push('Golden Key');
-                if (!gameState.leverUp) needed.push('Pull Lever');
+                if (!gameState.patternSolved) needed.push('Pattern Memory');
+                if (!gameState.safeSolved) needed.push('Safe Combination');
+                if (!gameState.contraptionSolved) needed.push('Gear Alignment');
+                if (!gameState.sequenceSolved) needed.push('Color Sequence');
+                if (!gameState.hasMasterKey) needed.push('Master Key');
                 
-                updateStatus(`Still need: ${needed.join(', ')}`);
+                updateStatus(`Still need to complete: ${needed.join(', ')}`);
             }
         }
 
@@ -189,8 +512,8 @@
             if (message) {
                 status.setAttribute('value', message);
             } else {
-                const solved = Object.values(gameState).filter(Boolean).length;
-                status.setAttribute('value', `Progress: ${solved}/3 puzzles solved`);
+                const completed = Object.values(gameState).filter(Boolean).length - 1; // -1 for escaped flag
+                status.setAttribute('value', `Puzzle Chain Progress: ${completed}/7 steps completed`);
             }
         }
     </script>
