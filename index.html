@@ -2,7 +2,7 @@
 <html>
 <head>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-    <title>Advanced VR Escape Room - Puzzle Chain</title>
+    <title>Advanced VR Escape Room - With Hints</title>
 </head>
 <body>
     <a-scene vr-mode-ui="enabled: true" background="color: #001122">
@@ -16,20 +16,46 @@
         <a-light type="ambient" color="#404040"></a-light>
         <a-light type="point" position="0 1.5 0" color="#FFF"></a-light>
         
-        <!-- PUZZLE 1: Pattern Memory Panel (reveals Silver Key) -->
+        <!-- HINT BOARD - Central Information -->
+        <a-entity id="hint-board" position="0 1 -3.8">
+            <a-box width="3" height="1.5" depth="0.05" color="#2C3E50"></a-box>
+            <a-text position="0 0.6 0.03" value="ESCAPE ROOM GUIDE" align="center" color="#FFD700" 
+                    font="kelsonsans" width="8"></a-text>
+            
+            <a-text id="current-hint" position="0 0.2 0.03" 
+                    value="Watch the pattern demonstration, then repeat it!" 
+                    align="center" color="#FFF" width="6"></a-text>
+            
+            <a-text position="0 -0.2 0.03" value="Click me for hints!" align="center" color="#00FF00" 
+                    class="interactive" id="hint-button" width="4"></a-text>
+            
+            <a-text id="progress-hint" position="0 -0.5 0.03" 
+                    value="Step 1/5: Solve Pattern Memory" align="center" color="#87CEEB" width="5"></a-text>
+        </a-entity>
+        
+        <!-- PUZZLE 1: Pattern Memory Panel -->
         <a-entity id="pattern-panel" position="-3.5 0.5 -3.5">
             <a-box width="1.5" height="1" depth="0.1" color="#333"></a-box>
             <a-text position="0 0.7 0.1" value="Pattern Memory" align="center" color="#FFF"></a-text>
+            <a-text position="0 -0.6 0.1" value="Watch → Remember → Repeat" align="center" color="#FFD700" width="4"></a-text>
             
-            <!-- Pattern buttons in 2x2 grid -->
+            <!-- Pattern buttons with numbers -->
             <a-cylinder id="pattern-btn-1" position="-0.3 0.2 0.1" radius="0.1" height="0.05" 
-                       color="#FF0000" class="interactive pattern-btn" data-pattern="1"></a-cylinder>
+                       color="#FF0000" class="interactive pattern-btn" data-pattern="1">
+                <a-text position="0 0 0.03" value="1" align="center" color="#FFF"></a-text>
+            </a-cylinder>
             <a-cylinder id="pattern-btn-2" position="0.3 0.2 0.1" radius="0.1" height="0.05" 
-                       color="#FF0000" class="interactive pattern-btn" data-pattern="2"></a-cylinder>
+                       color="#FF0000" class="interactive pattern-btn" data-pattern="2">
+                <a-text position="0 0 0.03" value="2" align="center" color="#FFF"></a-text>
+            </a-cylinder>
             <a-cylinder id="pattern-btn-3" position="-0.3 -0.2 0.1" radius="0.1" height="0.05" 
-                       color="#FF0000" class="interactive pattern-btn" data-pattern="3"></a-cylinder>
+                       color="#FF0000" class="interactive pattern-btn" data-pattern="3">
+                <a-text position="0 0 0.03" value="3" align="center" color="#FFF"></a-text>
+            </a-cylinder>
             <a-cylinder id="pattern-btn-4" position="0.3 -0.2 0.1" radius="0.1" height="0.05" 
-                       color="#FF0000" class="interactive pattern-btn" data-pattern="4"></a-cylinder>
+                       color="#FF0000" class="interactive pattern-btn" data-pattern="4">
+                <a-text position="0 0 0.03" value="4" align="center" color="#FFF"></a-text>
+            </a-cylinder>
         </a-entity>
         
         <!-- Silver Key (hidden initially) -->
@@ -38,91 +64,144 @@
                 animation="property: rotation; to: 0 360 0; dur: 2000; repeat: indefinite">
         </a-torus>
         
-        <!-- PUZZLE 2: Combination Safe (needs Silver Key, reveals tools) -->
+        <!-- PUZZLE 2: Combination Safe -->
         <a-entity id="safe" position="3.5 0 -3.5">
             <a-box width="1.2" height="1.5" depth="0.8" color="#2F4F4F"></a-box>
-            <a-text position="0 1 0.5" value="Safe - Need Silver Key" align="center" color="#FFF"></a-text>
+            <a-text position="0 1 0.5" value="SAFE" align="center" color="#FFF"></a-text>
+            <a-text position="0 -1 0.5" value="Need Silver Key First!" align="center" color="#FF6B6B" width="4"></a-text>
             
-            <!-- Combination dials -->
+            <!-- Hint plaque -->
+            <a-box position="0 0.5 0.5" width="1" height="0.3" depth="0.02" color="#FFD700"></a-box>
+            <a-text position="0 0.5 0.52" value="Lucky Numbers: 7-3-9" align="center" color="#000" width="6"></a-text>
+            
+            <!-- Combination dials with current numbers -->
             <a-cylinder id="dial-1" position="-0.3 0.2 0.45" radius="0.15" height="0.05" 
-                       color="#FFD700" class="interactive dial" data-value="0" data-target="7"></a-cylinder>
+                       color="#FFD700" class="interactive dial" data-value="0" data-target="7">
+                <a-text position="0 0 0.03" value="0" align="center" color="#000"></a-text>
+            </a-cylinder>
             <a-cylinder id="dial-2" position="0 0.2 0.45" radius="0.15" height="0.05" 
-                       color="#FFD700" class="interactive dial" data-value="0" data-target="3"></a-cylinder>
+                       color="#FFD700" class="interactive dial" data-value="0" data-target="3">
+                <a-text position="0 0 0.03" value="0" align="center" color="#000"></a-text>
+            </a-cylinder>
             <a-cylinder id="dial-3" position="0.3 0.2 0.45" radius="0.15" height="0.05" 
-                       color="#FFD700" class="interactive dial" data-value="0" data-target="9"></a-cylinder>
+                       color="#FFD700" class="interactive dial" data-value="0" data-target="9">
+                <a-text position="0 0 0.03" value="0" align="center" color="#000"></a-text>
+            </a-cylinder>
             
             <!-- Keyhole -->
             <a-cylinder id="keyhole" position="0 -0.3 0.45" radius="0.05" height="0.05" 
-                       color="#000" class="interactive"></a-cylinder>
+                       color="#000" class="interactive">
+                <a-text position="0 -0.15 0" value="Insert Silver Key" align="center" color="#C0C0C0" width="3"></a-text>
+            </a-cylinder>
         </a-entity>
         
-        <!-- PUZZLE 3: Mechanical Contraption (needs tools from safe) -->
+        <!-- PUZZLE 3: Mechanical Contraption -->
         <a-entity id="contraption" position="0 0.5 3.5">
             <a-box width="2" height="1" depth="0.3" color="#8B4513"></a-box>
             <a-text position="0 0.7 0.2" value="Mechanical Lock" align="center" color="#FFF"></a-text>
+            <a-text position="0 -0.7 0.2" value="Need Both Tools First!" align="center" color="#FF6B6B" width="4"></a-text>
             
-            <!-- Gears that need to be aligned -->
+            <!-- Instruction plaque -->
+            <a-box position="0 0.4 0.2" width="1.8" height="0.2" depth="0.02" color="#87CEEB"></a-box>
+            <a-text position="0 0.4 0.22" value="Align all gears pointing DOWN" align="center" color="#000" width="6"></a-text>
+            
+            <!-- Gears with directional arrows -->
             <a-torus id="gear-1" position="-0.5 0 0.2" radius="0.2" radius-tubular="0.03" 
-                    color="#B8860B" class="interactive gear" data-rotation="0"></a-torus>
+                    color="#B8860B" class="interactive gear" data-rotation="0">
+                <a-text position="0 0 0.03" value="↑" align="center" color="#000" width="8"></a-text>
+            </a-torus>
             <a-torus id="gear-2" position="0 0 0.2" radius="0.2" radius-tubular="0.03" 
-                    color="#B8860B" class="interactive gear" data-rotation="0"></a-torus>
+                    color="#B8860B" class="interactive gear" data-rotation="0">
+                <a-text position="0 0 0.03" value="↑" align="center" color="#000" width="8"></a-text>
+            </a-torus>
             <a-torus id="gear-3" position="0.5 0 0.2" radius="0.2" radius-tubular="0.03" 
-                    color="#B8860B" class="interactive gear" data-rotation="0"></a-torus>
+                    color="#B8860B" class="interactive gear" data-rotation="0">
+                <a-text position="0 0 0.03" value="↑" align="center" color="#000" width="8"></a-text>
+            </a-torus>
             
-            <!-- Tool slots -->
+            <!-- Tool slots with labels -->
             <a-box id="wrench-slot" position="-0.7 -0.3 0.2" width="0.1" height="0.2" depth="0.05" 
-                   color="#FF6B6B" class="interactive"></a-box>
+                   color="#FF6B6B" class="interactive">
+                <a-text position="0 -0.2 0" value="Wrench" align="center" color="#FFF" width="4"></a-text>
+            </a-box>
             <a-box id="screwdriver-slot" position="0.7 -0.3 0.2" width="0.1" height="0.2" depth="0.05" 
-                   color="#4ECDC4" class="interactive"></a-box>
+                   color="#4ECDC4" class="interactive">
+                <a-text position="0 -0.2 0" value="Screwdriver" align="center" color="#FFF" width="3"></a-text>
+            </a-box>
         </a-entity>
         
-        <!-- PUZZLE 4: Color Sequence Lock (needs Golden Key from contraption) -->
+        <!-- PUZZLE 4: Color Sequence Lock -->
         <a-entity id="sequence-lock" position="-3.5 0.5 3.5">
             <a-box width="1.5" height="1.2" depth="0.1" color="#2C3E50"></a-box>
             <a-text position="0 0.8 0.1" value="Sequence Lock" align="center" color="#FFF"></a-text>
+            <a-text position="0 -0.8 0.1" value="Need Golden Key First!" align="center" color="#FF6B6B" width="4"></a-text>
             
-            <!-- Color sequence buttons -->
+            <!-- Color code hint -->
+            <a-box position="0 0.5 0.1" width="1.4" height="0.15" depth="0.02" color="#000"></a-box>
+            <a-text position="0 0.5 0.12" value="Code: B-G-Y-B-G-R" align="center" color="#FFF" width="6"></a-text>
+            
+            <!-- Color sequence buttons with position numbers -->
             <a-sphere id="seq-btn-1" position="-0.4 0.2 0.1" radius="0.08" 
-                     color="#FF0000" class="interactive seq-btn" data-seq="1" data-state="red"></a-sphere>
+                     color="#FF0000" class="interactive seq-btn" data-seq="1" data-state="red">
+                <a-text position="0 0 0.1" value="1" align="center" color="#FFF" width="8"></a-text>
+            </a-sphere>
             <a-sphere id="seq-btn-2" position="-0.1 0.2 0.1" radius="0.08" 
-                     color="#FF0000" class="interactive seq-btn" data-seq="2" data-state="red"></a-sphere>
+                     color="#FF0000" class="interactive seq-btn" data-seq="2" data-state="red">
+                <a-text position="0 0 0.1" value="2" align="center" color="#FFF" width="8"></a-text>
+            </a-sphere>
             <a-sphere id="seq-btn-3" position="0.2 0.2 0.1" radius="0.08" 
-                     color="#FF0000" class="interactive seq-btn" data-seq="3" data-state="red"></a-sphere>
+                     color="#FF0000" class="interactive seq-btn" data-seq="3" data-state="red">
+                <a-text position="0 0 0.1" value="3" align="center" color="#FFF" width="8"></a-text>
+            </a-sphere>
             <a-sphere id="seq-btn-4" position="-0.4 -0.1 0.1" radius="0.08" 
-                     color="#FF0000" class="interactive seq-btn" data-seq="4" data-state="red"></a-sphere>
+                     color="#FF0000" class="interactive seq-btn" data-seq="4" data-state="red">
+                <a-text position="0 0 0.1" value="4" align="center" color="#FFF" width="8"></a-text>
+            </a-sphere>
             <a-sphere id="seq-btn-5" position="-0.1 -0.1 0.1" radius="0.08" 
-                     color="#FF0000" class="interactive seq-btn" data-seq="5" data-state="red"></a-sphere>
+                     color="#FF0000" class="interactive seq-btn" data-seq="5" data-state="red">
+                <a-text position="0 0 0.1" value="5" align="center" color="#FFF" width="8"></a-text>
+            </a-sphere>
             <a-sphere id="seq-btn-6" position="0.2 -0.1 0.1" radius="0.08" 
-                     color="#FF0000" class="interactive seq-btn" data-seq="6" data-state="red"></a-sphere>
+                     color="#FF0000" class="interactive seq-btn" data-seq="6" data-state="red">
+                <a-text position="0 0 0.1" value="6" align="center" color="#FFF" width="8"></a-text>
+            </a-sphere>
                      
             <!-- Golden keyhole -->
             <a-cylinder id="golden-keyhole" position="0 -0.4 0.1" radius="0.06" height="0.05" 
-                       color="#FFD700" class="interactive"></a-cylinder>
+                       color="#FFD700" class="interactive">
+                <a-text position="0 -0.12 0" value="Golden Key" align="center" color="#FFD700" width="3"></a-text>
+            </a-cylinder>
         </a-entity>
         
-        <!-- Tools (hidden initially, revealed by safe) -->
+        <!-- Tools with labels (hidden initially) -->
         <a-box id="wrench" position="3.5 -0.5 -3" width="0.05" height="0.3" depth="0.05" 
-               color="#FF6B6B" class="interactive tool" visible="false"></a-box>
+               color="#FF6B6B" class="interactive tool" visible="false">
+            <a-text position="0 0.2 0" value="Wrench" align="center" color="#FFF" width="4"></a-text>
+        </a-box>
         <a-box id="screwdriver" position="3.8 -0.5 -3" width="0.03" height="0.25" depth="0.03" 
-               color="#4ECDC4" class="interactive tool" visible="false"></a-box>
-        
-        <!-- Golden Key (from contraption) -->
+               color="#4ECDC4" class="interactive tool" visible="false">
+            <a-text position="0 0.15 0" value="Screwdriver" align="center" color="#FFF" width="3"></a-text>
+        </a-box>
+          <!-- Keys with labels -->
         <a-torus id="golden-key" position="0 0.2 3.8" radius="0.18" radius-tubular="0.05" 
                 color="#FFD700" class="interactive" visible="false"
                 animation="property: rotation; to: 0 360 0; dur: 2500; repeat: indefinite">
+            <a-text position="0 0.3 0" value="Golden Key" align="center" color="#FFD700" width="4"></a-text>
         </a-torus>
         
         <!-- Master Key (final reward) -->
         <a-torus id="master-key" position="-3.5 0.2 3.8" radius="0.2" radius-tubular="0.06" 
                 color="#FF1493" class="interactive" visible="false"
                 animation="property: rotation; to: 0 360 0; dur: 3000; repeat: indefinite">
+            <a-text position="0 0.35 0" value="Master Key" align="center" color="#FF1493" width="4"></a-text>
         </a-torus>
         
-        <!-- Exit Door -->
+        <!-- Exit Door with clear instructions -->
         <a-box id="exit-door" position="3.8 0 0" width="0.4" height="2.5" depth="2" 
                color="#654321" class="interactive">
         </a-box>
         <a-text id="door-status" position="3.5 1.8 0" value="LOCKED - Need Master Key" align="center" color="#FF0000"></a-text>
+        <a-text position="3.5 1.4 0" value="Complete all 4 puzzles!" align="center" color="#FFD700" width="4"></a-text>
         
         <!-- VR Camera Setup -->
         <a-entity id="cameraRig" position="0 0 0">
@@ -144,7 +223,7 @@
         </a-entity>
         
         <!-- Status Display -->
-        <a-text id="status" position="0 3 -3.8" value="Solve the puzzle chain to escape!" 
+        <a-text id="status" position="0 3 -3.8" value="Follow the hints to escape!" 
                 align="center" color="#FFF"></a-text>
     </a-scene>
 
@@ -161,18 +240,48 @@
             escaped: false
         };
 
-        // Puzzle solutions
-        const correctPattern = [1, 3, 2, 4]; // Sequence to press buttons
-        const correctSequence = ['blue', 'green', 'yellow', 'blue', 'green', 'red']; // Color sequence
+        // Puzzle solutions with hints
+        const correctPattern = [1, 3, 2, 4];
+        const correctSequence = ['blue', 'green', 'yellow', 'blue', 'green', 'red'];
         const sequenceColors = ['red', 'blue', 'green', 'yellow'];
         
         let patternInput = [];
         let sequenceInput = [];
         let toolsEquipped = { wrench: false, screwdriver: false };
+        let hintLevel = 0;
+
+        // Comprehensive hints system
+        const hints = {
+            pattern: [
+                "Watch the pattern demonstration, then repeat it!",
+                "The buttons will light up in a sequence - memorize it!",
+                "Pattern hint: Press 1, then 3, then 2, then 4",
+                "Exact solution: Button 1 → Button 3 → Button 2 → Button 4"
+            ],
+            safe: [
+                "Use your Silver Key on the keyhole, then set the combination!",
+                "The lucky numbers are written on the golden plaque: 7-3-9",
+                "Click each dial to change its number, then use the key!",
+                "Set LEFT dial to 7, MIDDLE to 3, RIGHT to 9, then insert key!"
+            ],
+            contraption: [
+                "Collect both tools from the safe, then equip them in the slots!",
+                "Click the tool slots to equip your wrench and screwdriver!",
+                "All gears need to point DOWN (↓) to unlock the mechanism!",
+                "Click each gear 3 times to make all arrows point downward!"
+            ],
+            sequence: [
+                "Use your Golden Key, then set the color sequence!",
+                "The code is shown: B-G-Y-B-G-R (Blue-Green-Yellow-Blue-Green-Red)",
+                "Click each button to cycle through colors, match the pattern!",
+                "Button 1: Blue, Button 2: Green, Button 3: Yellow, Button 4: Blue, Button 5: Green, Button 6: Red"
+            ]
+        };
 
         document.addEventListener('DOMContentLoaded', function() {
             setupInteractions();
             showPatternDemo();
+            updateHintBoard();
         });
 
         function setupInteractions() {
@@ -195,6 +304,12 @@
         function handleInteraction(event) {
             const element = event.target;
             const id = element.id;
+            
+            // Hint button
+            if (id === 'hint-button') {
+                showNextHint();
+                return;
+            }
             
             // Pattern Memory Puzzle
             if (element.classList.contains('pattern-btn') && !gameState.patternSolved) {
@@ -250,26 +365,70 @@
             }
             
             updateStatus();
+            updateHintBoard();
         }
 
-        // PUZZLE 1: Pattern Memory
+        function showNextHint() {
+            hintLevel = (hintLevel + 1) % 4;
+            updateHintBoard();
+        }
+
+        function updateHintBoard() {
+            const currentHint = document.getElementById('current-hint');
+            const progressHint = document.getElementById('progress-hint');
+            
+            let currentPuzzle = 'pattern';
+            let step = '1/5: Solve Pattern Memory';
+            
+            if (!gameState.patternSolved) {
+                currentPuzzle = 'pattern';
+                step = '1/5: Solve Pattern Memory';
+            } else if (!gameState.hasSilverKey) {
+                currentHint.setAttribute('value', 'Collect the Silver Key that appeared!');
+                step = '2/5: Collect Silver Key';
+                return;
+            } else if (!gameState.safeSolved) {
+                currentPuzzle = 'safe';
+                step = '3/5: Open the Safe';
+            } else if (!gameState.contraptionSolved) {
+                currentPuzzle = 'contraption';
+                step = '4/5: Solve Mechanical Lock';
+            } else if (!gameState.sequenceSolved) {
+                currentPuzzle = 'sequence';
+                step = '5/5: Solve Color Sequence';
+            } else {
+                currentHint.setAttribute('value', 'Collect the Master Key and escape!');
+                step = 'Final: Escape with Master Key!';
+                return;
+            }
+            
+            currentHint.setAttribute('value', hints[currentPuzzle][hintLevel]);
+            progressHint.setAttribute('value', step);
+        }
+
+        // PUZZLE 1: Pattern Memory (enhanced with better feedback)
         function showPatternDemo() {
             const buttons = document.querySelectorAll('.pattern-btn');
             let step = 0;
             
-            const demo = setInterval(() => {
-                if (step < correctPattern.length) {
-                    const btn = document.getElementById(`pattern-btn-${correctPattern[step]}`);
-                    btn.setAttribute('color', '#00FF00');
-                   setTimeout(() => {
-                        btn.setAttribute('color', '#FF0000');
-                    }, 500);
-                    step++;
-                } else {
-                    clearInterval(demo);
-                    updateStatus('Repeat the pattern you just saw!');
-                }
-            }, 800);
+            updateStatus('Watch carefully! Pattern starting in 3 seconds...');
+            
+            setTimeout(() => {
+                const demo = setInterval(() => {
+                    if (step < correctPattern.length) {
+                        const btn = document.getElementById(`pattern-btn-${correctPattern[step]}`);
+                        btn.setAttribute('color', '#00FF00');
+                        
+                        setTimeout(() => {
+                            btn.setAttribute('color', '#FF0000');
+                        }, 600);
+                        step++;
+                    } else {
+                        clearInterval(demo);
+                        updateStatus('Now repeat the pattern you just saw!');
+                    }
+                }, 1000);
+            }, 3000);
         }
 
         function handlePatternButton(button) {
@@ -282,7 +441,7 @@
                 button.setAttribute('color', '#FF0000');
             }, 200);
             
-            // Check if pattern matches so far
+            // Check pattern progress
             if (patternInput.length <= correctPattern.length) {
                 let correct = true;
                 for (let i = 0; i < patternInput.length; i++) {
@@ -293,36 +452,37 @@
                 }
                 
                 if (!correct) {
-                    // Wrong pattern, reset
                     patternInput = [];
-                    updateStatus('Wrong pattern! Try again.');
-                    setTimeout(() => showPatternDemo(), 1000);
+                    updateStatus('Wrong! Watch the pattern again...');
+                    setTimeout(() => showPatternDemo(), 2000);
                 } else if (patternInput.length === correctPattern.length) {
-                    // Pattern complete!
                     gameState.patternSolved = true;
                     document.getElementById('silver-key').setAttribute('visible', 'true');
-                    updateStatus('Pattern solved! Silver key revealed!');
+                    updateStatus('Perfect! Silver key revealed - collect it!');
+                } else {
+                    updateStatus(`Good! Keep going... (${patternInput.length}/${correctPattern.length})`);
                 }
             }
         }
 
-        // PUZZLE 2: Safe with Combination
+        // PUZZLE 2: Safe (enhanced with visual feedback)
         function rotateDial(dial) {
             let value = parseInt(dial.getAttribute('data-value'));
             value = (value + 1) % 10;
             dial.setAttribute('data-value', value.toString());
-            dial.setAttribute('rotation', `0 0 ${value * 36}`); // 360/10 = 36 degrees per number
+            dial.setAttribute('rotation', `0 0 ${value * 36}`);
             
-            // Show number on dial
-            let numberDisplay = dial.querySelector('a-text');
-            if (!numberDisplay) {
-                numberDisplay = document.createElement('a-text');
-                numberDisplay.setAttribute('position', '0 0 0.03');
-                numberDisplay.setAttribute('align', 'center');
-                numberDisplay.setAttribute('color', '#000');
-                dial.appendChild(numberDisplay);
-            }
+            // Update number display
+            const numberDisplay = dial.querySelector('a-text');
             numberDisplay.setAttribute('value', value.toString());
+            
+            // Color feedback for correct numbers
+            const target = parseInt(dial.getAttribute('data-target'));
+            if (value === target) {
+                dial.setAttribute('color', '#00FF00');
+            } else {
+                dial.setAttribute('color', '#FFD700');
+            }
         }
 
         function checkSafeCombination() {
@@ -334,25 +494,23 @@
                 gameState.safeSolved = true;
                 gameState.hasTools = true;
                 
-                // Reveal tools
                 document.getElementById('wrench').setAttribute('visible', 'true');
                 document.getElementById('screwdriver').setAttribute('visible', 'true');
                 
-                // Safe opening animation
                 const safe = document.getElementById('safe');
                 safe.setAttribute('animation', 'property: rotation; to: 0 45 0; dur: 1000');
                 
-                updateStatus('Safe opened! Tools revealed!');
+                updateStatus('Safe opened! Collect both tools!');
             } else {
-                updateStatus(`Combination: ${dial1}-${dial2}-${dial3}. Try 7-3-9!`);
+                updateStatus(`Combination ${dial1}-${dial2}-${dial3} is wrong! Try 7-3-9!`);
             }
         }
 
-        // Tool System
+        // Tool System (enhanced)
         function collectTool(tool) {
             tool.setAttribute('animation', 'property: scale; to: 0 0 0; dur: 500');
             setTimeout(() => tool.remove(), 500);
-            updateStatus(`${tool.id} collected!`);
+            updateStatus(`${tool.id.charAt(0).toUpperCase() + tool.id.slice(1)} collected! Equip it at the contraption!`);
         }
 
         function equipTool(toolType) {
@@ -361,18 +519,31 @@
             slot.setAttribute('color', '#00FF00');
             
             if (toolsEquipped.wrench && toolsEquipped.screwdriver) {
-                updateStatus('Both tools equipped! You can now operate the gears!');
+                updateStatus('Both tools equipped! Now click the gears to align them!');
             } else {
                 updateStatus(`${toolType} equipped! Need both tools to operate gears.`);
             }
         }
 
-        // PUZZLE 3: Mechanical Contraption
+        // PUZZLE 3: Mechanical Contraption (enhanced with arrow indicators)
         function rotateGear(gear) {
             let rotation = parseInt(gear.getAttribute('data-rotation'));
-            rotation = (rotation + 60) % 360; // Rotate by 60 degrees (6 positions)
+            rotation = (rotation + 60) % 360;
             gear.setAttribute('data-rotation', rotation.toString());
             gear.setAttribute('rotation', `0 0 ${rotation}`);
+            
+            // Update arrow direction
+            const arrow = gear.querySelector('a-text');
+            const arrows = ['↑', '↗', '→', '↘', '↓', '↙'];
+            const arrowIndex = rotation / 60;
+            arrow.setAttribute('value', arrows[arrowIndex]);
+            
+            // Color feedback
+            if (rotation === 240) { // Down position
+                gear.setAttribute('color', '#00FF00');
+            } else {
+                gear.setAttribute('color', '#B8860B');
+            }
             
             checkGearAlignment();
         }
@@ -381,24 +552,25 @@
             const gear1Rot = parseInt(document.getElementById('gear-1').getAttribute('data-rotation'));
             const gear2Rot = parseInt(document.getElementById('gear-2').getAttribute('data-rotation'));
             const gear3Rot = parseInt(document.getElementById('gear-3').getAttribute('data-rotation'));
-            
-            // All gears need to be at 180 degrees (upside down)
-            if (gear1Rot === 180 && gear2Rot === 180 && gear3Rot === 180) {
+             if (gear1Rot === 240 && gear2Rot === 240 && gear3Rot === 240) {
                 gameState.contraptionSolved = true;
                 gameState.hasGoldenKey = true;
                 
                 document.getElementById('golden-key').setAttribute('visible', 'true');
                 
-                // Success animation
+                // Success animation for all gears
                 document.querySelectorAll('.gear').forEach(gear => {
-                    gear.setAttribute('color', '#00FF00');
+                    gear.setAttribute('animation', 'property: scale; to: 1.2 1.2 1.2; dur: 500; repeat: 2; direction: alternate');
                 });
                 
-                updateStatus('Gears aligned! Golden key revealed!');
+                updateStatus('All gears aligned! Golden key revealed - collect it!');
+            } else {
+                const aligned = [gear1Rot, gear2Rot, gear3Rot].filter(rot => rot === 240).length;
+                updateStatus(`Gears aligned: ${aligned}/3. Keep clicking to point them all DOWN!`);
             }
         }
 
-        // PUZZLE 4: Color Sequence Lock
+        // PUZZLE 4: Color Sequence Lock (enhanced with better feedback)
         function cycleSequenceButton(button) {
             const currentState = button.getAttribute('data-state');
             const currentIndex = sequenceColors.indexOf(currentState);
@@ -407,6 +579,19 @@
             
             button.setAttribute('data-state', nextColor);
             button.setAttribute('color', getColorHex(nextColor));
+            
+            // Show current sequence progress
+            updateSequenceDisplay();
+        }
+
+        function updateSequenceDisplay() {
+            let currentSeq = [];
+            for (let i = 1; i <= 6; i++) {
+                const button = document.getElementById(`seq-btn-${i}`);
+                const color = button.getAttribute('data-state');
+                currentSeq.push(color.charAt(0).toUpperCase()); // First letter
+            }
+            updateStatus(`Current: ${currentSeq.join('-')} | Target: B-G-Y-B-G-R`);
         }
 
         function getColorHex(colorName) {
@@ -427,10 +612,13 @@
             }
             
             let correct = true;
+            let correctCount = 0;
+            
             for (let i = 0; i < correctSequence.length; i++) {
-                if (sequenceInput[i] !== correctSequence[i]) {
+                if (sequenceInput[i] === correctSequence[i]) {
+                    correctCount++;
+                } else {
                     correct = false;
-                    break;
                 }
             }
             
@@ -440,21 +628,21 @@
                 
                 document.getElementById('master-key').setAttribute('visible', 'true');
                 
-                // Success animation
+                // Success animation for all buttons
                 document.querySelectorAll('.seq-btn').forEach(btn => {
-                    btn.setAttribute('animation', 'property: scale; to: 1.2 1.2 1.2; dur: 500; repeat: 2; direction: alternate');
+                    btn.setAttribute('animation', 'property: scale; to: 1.3 1.3 1.3; dur: 300; repeat: 3; direction: alternate');
                 });
                 
-                updateStatus('Sequence correct! Master key revealed!');
+                updateStatus('Perfect sequence! Master key revealed - collect it and escape!');
             } else {
-                updateStatus(`Wrong sequence! Need: ${correctSequence.join('-')}`);
+                updateStatus(`${correctCount}/6 colors correct! Keep adjusting the sequence.`);
             }
         }
 
-        // Key Collection System
+        // Key Collection System (enhanced with better feedback)
         function collectKey(keyType) {
             const keyElement = document.getElementById(`${keyType}-key`);
-            keyElement.setAttribute('animation', 'property: position; to: 0 2 0; dur: 1000');
+            keyElement.setAttribute('animation', 'property: position; to: 0 2.5 0; dur: 1000');
             
             setTimeout(() => {
                 keyElement.setAttribute('animation', 'property: scale; to: 0 0 0; dur: 500');
@@ -463,17 +651,17 @@
             
             if (keyType === 'silver') {
                 gameState.hasSilverKey = true;
-                updateStatus('Silver key collected! You can now open the safe.');
+                updateStatus('Silver key collected! Go to the safe and use it!');
             } else if (keyType === 'golden') {
                 gameState.hasGoldenKey = true;
-                updateStatus('Golden key collected! You can now use the sequence lock.');
+                updateStatus('Golden key collected! Go to the sequence lock!');
             } else if (keyType === 'master') {
                 gameState.hasMasterKey = true;
-                updateStatus('Master key collected! You can now escape!');
+                updateStatus('Master key collected! Click the exit door to escape!');
             }
         }
 
-        // Exit System
+        // Exit System (enhanced)
         function checkExit() {
             if (gameState.hasMasterKey) {
                 gameState.escaped = true;
@@ -488,22 +676,51 @@
                 
                 updateStatus('🎉 CONGRATULATIONS! You solved all puzzles and escaped! 🎉');
                 
-                // Celebration effects
+                // Victory celebration
                 setTimeout(() => {
                     document.querySelectorAll('.interactive').forEach(element => {
-                        element.setAttribute('animation', 'property: rotation; to: 0 720 0; dur: 3000');
+                        if (element.parentNode) { // Check if element still exists
+                            element.setAttribute('animation', 'property: rotation; to: 0 720 0; dur: 3000');
+                        }
                     });
                 }, 500);
                 
-            } else {
-                let needed = [];
-                if (!gameState.patternSolved) needed.push('Pattern Memory');
-                if (!gameState.safeSolved) needed.push('Safe Combination');
-                if (!gameState.contraptionSolved) needed.push('Gear Alignment');
-                if (!gameState.sequenceSolved) needed.push('Color Sequence');
-                if (!gameState.hasMasterKey) needed.push('Master Key');
+                // Update hint board for victory
+                document.getElementById('current-hint').setAttribute('value', 'YOU DID IT! Amazing puzzle solving!');
+                document.getElementById('progress-hint').setAttribute('value', '✅ ALL PUZZLES COMPLETED! ✅');
                 
-                updateStatus(`Still need to complete: ${needed.join(', ')}`);
+            } else {
+                // Detailed feedback on what's still needed
+                let needed = [];
+                let nextStep = '';
+                
+                if (!gameState.patternSolved) {
+                    needed.push('Pattern Memory Puzzle');
+                    nextStep = 'Start with the pattern memory puzzle!';
+                } else if (!gameState.hasSilverKey) {
+                    needed.push('Collect Silver Key');
+                    nextStep = 'Collect the silver key that appeared!';
+                } else if (!gameState.safeSolved) {
+                    needed.push('Open Safe (7-3-9)');
+                    nextStep = 'Use silver key on safe with combination 7-3-9!';
+                } else if (!gameState.hasTools) {
+                    needed.push('Collect Tools');
+                    nextStep = 'Collect both tools from the opened safe!';
+                } else if (!gameState.contraptionSolved) {
+                    needed.push('Align Gears (all pointing down)');
+                    nextStep = 'Equip tools and align all gears pointing down!';
+                } else if (!gameState.hasGoldenKey) {
+                    needed.push('Collect Golden Key');
+                    nextStep = 'Collect the golden key that appeared!';
+                } else if (!gameState.sequenceSolved) {
+                    needed.push('Color Sequence (B-G-Y-B-G-R)');
+                    nextStep = 'Set color sequence: Blue-Green-Yellow-Blue-Green-Red!';
+                } else if (!gameState.hasMasterKey) {
+                    needed.push('Collect Master Key');
+                    nextStep = 'Collect the master key that appeared!';
+                }
+                
+                updateStatus(`Still needed: ${needed.join(', ')}. ${nextStep}`);
             }
         }
 
@@ -512,8 +729,14 @@
             if (message) {
                 status.setAttribute('value', message);
             } else {
-                const completed = Object.values(gameState).filter(Boolean).length - 1; // -1 for escaped flag
-                status.setAttribute('value', `Puzzle Chain Progress: ${completed}/7 steps completed`);
+                const completed = [
+                    gameState.patternSolved,
+                    gameState.hasSilverKey,
+                    gameState.safeSolved,
+                    gameState.contraptionSolved,
+                    gameState.sequenceSolved
+                ].filter(Boolean).length;
+                status.setAttribute('value', `Progress: ${completed}/5 major steps completed`);
             }
         }
     </script>
