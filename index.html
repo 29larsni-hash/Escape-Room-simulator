@@ -91,14 +91,14 @@
             <!-- Keyhole -->
             <a-cylinder id="keyhole" position="0 -0.3 0.45" radius="0.05" height="0.05" 
                        color="#000" class="interactive">
-                <a-text position="0 -0.15 0" value="Insert Silver Key" align="center" color="#C0C0C0" width="3"></a-text>
+                <a-text position="0 -0.15 0" value="Silver Keyhole" align="center" color="#C0C0C0" width="3"></a-text>
             </a-cylinder>
         </a-entity>
         
         <!-- PUZZLE 3: Mechanical Contraption -->
         <a-entity id="contraption" position="0 0.5 3.2" rotation="0 180 0">
             <a-box width="2" height="1" depth="0.3" color="#8B4513"></a-box>
-            <a-text position="0 0.7 0.2" value="Mechanical Lock" align="center" color="#FFF"></a-text>
+            <a-text position="0 0.7 0.2" value="Mechanical Lock" align="center" color="blue"></a-text>
             <a-text position="0 -0.7 0.2" value="Need Both Tools First!" align="center" color="#FF6B6B" width="4"></a-text>
             
             <!-- Instruction plaque -->
@@ -138,7 +138,7 @@
             
             <!-- Color code hint -->
             <a-box position="0 0.5 0.1" width="1.4" height="0.15" depth="0.02" color="#000"></a-box>
-            <a-text position="0 0.5 0.12" value="Code: B-G-Y-B-G-R" align="center" color="#FFF" width="6"></a-text>
+            <a-text position="0.2 0.5 0.12" value="Code: B-G-Y-B-G-R" align="center" color="#FFF" width="6"></a-text>
             
             <!-- Color sequence buttons with position numbers -->
             <a-sphere id="seq-btn-1" position="-0.4 0.2 0.1" radius="0.08" 
@@ -169,18 +169,18 @@
             <!-- Golden keyhole -->
             <a-cylinder id="golden-keyhole" position="0 -0.4 0.1" radius="0.06" height="0.05" 
                        color="#FFD700" class="interactive">
-                <a-text position="0 -0.12 0" value="Golden Key" align="center" color="#FFD700" width="3"></a-text>
+                <a-text position="0 -0.12 0" value="Golden Keyhole" align="center" color="#FFD700" width="3"></a-text>
             </a-cylinder>
         </a-entity>
         
         <!-- Tools with labels (hidden initially) -->
-        <a-box id="wrench" position="3.5 -0.5 -3" width="0.05" height="0.3" depth="0.05" 
+        <a-box id="wrench" position="3.5 -0.5 -2.5" width="0.05" height="0.3" depth="0.05" 
                color="#FF6B6B" class="interactive tool" visible="false">
-            <a-text position="0 0.2 0" value="Wrench" align="center" color="#FFF" width="4"></a-text>
+            <a-text position="0 0.2 0" value="Wrench" align="center" color="green" width="4"></a-text>
         </a-box>
         <a-box id="screwdriver" position="3.8 -0.5 -3" width="0.03" height="0.25" depth="0.03" 
                color="#4ECDC4" class="interactive tool" visible="false">
-            <a-text position="0 0.15 0" value="Screwdriver" align="center" color="#FFF" width="3"></a-text>
+            <a-text position="0 0.15 0" value="Screwdriver" align="center" color="green" width="3"></a-text>
         </a-box>
           <!-- Keys with labels -->
         <a-torus id="golden-key" position="0 0.2 3.8" radius="0.18" radius-tubular="0.05" 
@@ -273,7 +273,7 @@
             sequence: [
                 "Use your Golden Key, then set the color sequence!",
                 "The code is shown: B-G-Y-B-G-R (Blue-Green-Yellow-Blue-Green-Red)",
-                "Click each button to cycle through colors, match the pattern!",
+                "What letter does each color start with?",
                 "Button 1: Blue, Button 2: Green, Button 3: Yellow, Button 4: Blue, Button 5: Green, Button 6: Red"
             ]
         };
